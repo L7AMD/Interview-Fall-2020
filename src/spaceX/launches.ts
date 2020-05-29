@@ -12,6 +12,47 @@ export interface ILaunch {
 }
 
 export class Launches {
+  async getLaunchesByRange(start: any, end: any) {
+    try {
+      // Get the date as a moment object
+      const startDateAsMoment = moment(start, 'YYYY');
+      const endDateAsMoment = moment(end, 'YYYY');
+
+      // Check that the date string is valid, and that the date is before or equal to today's date
+      // moment() creates a moment with today's date
+      if ( ( !startDateAsMoment.isValid() && !startDateAsMoment.isValid() ) || ( !startDateAsMoment.isSameOrBefore(moment()) && !endDateAsMoment.isSameOrBefore(moment()) )) {
+        return [{ error: 'invalid year' }];
+      }
+
+
+
+
+      var loop = start;
+      const allParsed=[] ;
+      while(loop <= end){
+        console.log(loop)
+        // Get the parsed request
+        const parsed = await this.requestLaunchesByYear(loop.getDate);
+        var newDate = loop.setDate(loop.getDate() + 1);
+        loop = new Date(newDate);
+        allParsed.push(parsed);
+      }
+
+
+
+
+
+      // Maps and creates the return list
+      return this.filterFields(allParsed);
+    } catch (e) {
+      console.log(e);
+      return [
+        {
+          error: `There was an error retrieving this launch`,
+        },
+      ];
+    }
+  }
   url = 'https://api.spacexdata.com/v3/launches';
 
   /**
